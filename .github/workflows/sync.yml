@@ -19,15 +19,17 @@ jobs:
         run: |
           mkdir -p data
           base="https://gitlab.com/Dimbreath/animegamedata2/-/raw/main/ExcelBinOutput"
-          files=(
-            "AvatarExcelConfigData.json"
-            "AvatarSkillDepotExcelConfigData.json"
-            "AvatarSkillExcelConfigData.json"
-            "ProudSkillExcelConfigData.json"
-          )
-          for f in "${files[@]}"; do
-            curl -sSL --fail "$base/$f" -o "data/$f"
-          done
+                        files=(
+                "AvatarExcelConfigData.json"
+                "AvatarSkillDepotExcelConfigData.json"
+                "AvatarSkillExcelConfigData.json"
+                "ProudSkillExcelConfigData.json"
+              )
+              for f in "${files[@]}"; do
+                curl -sSL --fail "$base/$f" -o "data/$f"
+              done
+
+              curl -sSL --fail "https://gitlab.com/Dimbreath/animegamedata2/-/raw/main/TextMap/TextMapEN.json" -o "data/TextMapEN.json"
 
       - name: Commit and push if changed
         run: |
