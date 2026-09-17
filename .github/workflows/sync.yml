@@ -1,0 +1,42 @@
+name: Sync Genshin character data
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'  # every Monday at 06:00 UTC
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Fetch latest character data files
+        run: |
+          mkdir -p data
+          base="https://gitlab.com/Dimbreath/animegamedata2/-/raw/main/ExcelBinOutput"
+          files=(
+            "AvatarExcelConfigData.json"
+            "AvatarSkillDepotExcelConfigData.json"
+            "AvatarSkillExcelConfigData.json"
+            "ProudSkillExcelConfigData.json"
+          )
+          for f in "${files[@]}"; do
+            curl -sSL --fail "$base/$f" -o "data/$f"
+          done
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/
+          if ! git diff --cached --quiet; then
+            git commit -m "Sync Genshin data $(date -u +'%Y-%m-%d')"
+            git push
+          else
+            echo "No changes."
+          fi
